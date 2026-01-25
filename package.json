@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "homepage": "https://ProjetosOnDev.github.io/site",
+  "homepage": "https://OnDevTec.github.io/site",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
