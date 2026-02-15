@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import Router from './Router'
+import ContactPage from './pages/Contact'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Router />
+    <ContactPage />
   </React.StrictMode>,
 )

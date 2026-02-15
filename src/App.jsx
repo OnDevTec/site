@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { 
   Calendar, 
   FileText, 
@@ -25,6 +26,9 @@ import {
   Network,
   Package,
   Zap,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
   Facebook,
   Instagram,
   Linkedin,
@@ -36,8 +40,58 @@ import { Card, CardHeader, CardContent } from './components/Card'
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  const schemaOrg = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "OnDoctor",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Web",
+        "description": "Sistema completo para gestão de clínicas e consultórios médicos com agenda online, prontuário eletrônico, telemedicina e gestão financeira",
+        "url": "https://site.ondoctor.app",
+        "offers": {
+          "@type": "AggregateOffer",
+          "lowPrice": "29.90",
+          "highPrice": "79.90",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "500"
+        }
+      },
+      {
+        "@type": "Organization",
+        "name": "OnDoctor",
+        "url": "https://site.ondoctor.app",
+        "logo": "https://site.ondoctor.app/ondoctor-logo.png",
+        "description": "Sistema completo para gestão de clínicas e consultórios médicos",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+55-11-91234-5678",
+          "contactType": "Customer Service",
+          "areaServed": "BR",
+          "availableLanguage": "Portuguese"
+        },
+        "sameAs": [
+          "https://facebook.com/ondoctorapp",
+          "https://instagram.com/ondoctorapp",
+          "https://linkedin.com/company/ondoctorapp",
+          "https://youtube.com/c/ondoctor"
+        ]
+      }
+    ]
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+      />
       <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       <Hero />
       <QuickNav />
@@ -52,6 +106,7 @@ function App() {
       <DocumentsSection />
       <About />
       <ComparisonTable />
+      <FAQ />
       <CTA />
       <Footer />
     </div>
@@ -65,15 +120,15 @@ function Header({ mobileMenuOpen, setMobileMenuOpen }) {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <a href="#home" className="flex items-center">
-              <img src="/ondoctor-logo.svg" alt="OnDoctor" className="h-8" />
+              <img src="/ondoctor-logo.png" alt="OnDoctor" className="h-10" />
             </a>
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Home</a>
-            <a href="#recursos" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Recursos</a>
-            <a href="#precos" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Preços</a>
-            <a href="#contato" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Contato</a>
+            <Link to="/" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Home</Link>
+            <Link to="/recursos" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Recursos</Link>
+            <Link to="/precos" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Preços</Link>
+            <Link to="/contato" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">Contato</Link>
             <Button variant="primary" size="sm">
               Sou Cliente
             </Button>
@@ -91,10 +146,10 @@ function Header({ mobileMenuOpen, setMobileMenuOpen }) {
 
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-4 border-t border-gray-200">
-            <a href="#home" className="block text-gray-700 hover:text-primary-600 font-medium">Home</a>
-            <a href="#recursos" className="block text-gray-700 hover:text-primary-600 font-medium">Recursos</a>
-            <a href="#precos" className="block text-gray-700 hover:text-primary-600 font-medium">Preços</a>
-            <a href="#contato" className="block text-gray-700 hover:text-primary-600 font-medium">Contato</a>
+            <Link to="/" className="block text-gray-700 hover:text-primary-600 font-medium">Home</Link>
+            <Link to="/recursos" className="block text-gray-700 hover:text-primary-600 font-medium">Recursos</Link>
+            <Link to="/precos" className="block text-gray-700 hover:text-primary-600 font-medium">Preços</Link>
+            <Link to="/contato" className="block text-gray-700 hover:text-primary-600 font-medium">Contato</Link>
             <Button variant="primary" size="sm" className="w-full">
               Sou Cliente
             </Button>
@@ -106,6 +161,77 @@ function Header({ mobileMenuOpen, setMobileMenuOpen }) {
 }
 
 function Hero() {
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const slides = [
+    {
+      icon: Calendar,
+      title: 'Agenda Online',
+      subtitle: 'Gestão completa de agendamentos',
+      color: 'from-primary-100 via-primary-50 to-white'
+    },
+    {
+      icon: MessageSquare,
+      title: 'Lembretes via WhatsApp',
+      subtitle: 'Envio e confirmação automática',
+      color: 'from-green-100 via-green-50 to-white'
+    },
+    {
+      icon: FileText,
+      title: 'Prontuário com IA',
+      subtitle: 'Prontuário eletrônico inteligente',
+      color: 'from-blue-100 via-blue-50 to-white'
+    },
+    {
+      icon: DollarSign,
+      title: 'Gestão Financeira',
+      subtitle: 'Controle total das finanças',
+      color: 'from-green-100 via-green-50 to-white'
+    },
+    {
+      icon: Sparkles,
+      title: 'Agente de IA',
+      subtitle: 'Assistente inteligente 24/7',
+      color: 'from-purple-100 via-purple-50 to-white'
+    },
+    {
+      icon: Users,
+      title: 'CRM',
+      subtitle: 'Gestão completa de relacionamento',
+      color: 'from-orange-100 via-orange-50 to-white'
+    },
+    {
+      icon: Smartphone,
+      title: 'Teleconsultas',
+      subtitle: 'Atendimento online integrado',
+      color: 'from-cyan-100 via-cyan-50 to-white'
+    },
+    {
+      icon: FileSignature,
+      title: 'Assinatura Digital',
+      subtitle: 'Documentos assinados com segurança',
+      color: 'from-indigo-100 via-indigo-50 to-white'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Gestão Financeira',
+      subtitle: 'Lucratividade e previsibilidade',
+      color: 'from-emerald-100 via-emerald-50 to-white'
+    },
+    {
+      icon: BarChart3,
+      title: 'Power BI',
+      subtitle: 'Dashboards e análises avançadas',
+      color: 'from-yellow-100 via-yellow-50 to-white'
+    },
+    {
+      icon: Network,
+      title: 'Redes e Franquias',
+      subtitle: 'Gestão de múltiplas unidades',
+      color: 'from-pink-100 via-pink-50 to-white'
+    }
+  ]
+
   const badges = [
     { icon: Calendar, text: 'Agenda Online' },
     { icon: MessageSquare, text: 'WhatsApp' },
@@ -124,49 +250,156 @@ function Hero() {
     { icon: Zap, text: '+30 recursos' },
   ]
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [slides.length])
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+  }
+
+  const CurrentIcon = slides[currentSlide].icon
+
   return (
     <section id="home" className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 pt-20 pb-32">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="inline-flex items-center px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-6 animate-fade-in">
-            <Sparkles className="w-4 h-4 mr-2" />
-            Sistema completo para gestão de clínicas
-          </div>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 animate-slide-up">
-            Você cuida dos pacientes.{' '}
-            <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-              O OnDoctor cuida do resto.
-            </span>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-600 mb-10 leading-relaxed max-w-3xl mx-auto">
-            Financeiro, agenda, prontuário e relacionamento em uma única plataforma. 
-            Junte-se a milhares de profissionais da saúde que transformaram sua gestão.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button variant="primary" size="lg" className="group">
-              Quero testar agora
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button variant="secondary" size="lg">
-              Conheça os planos
-            </Button>
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Conteúdo à esquerda */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-6 animate-fade-in">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Sistema completo para gestão de clínicas
+            </div>
+            
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 animate-slide-up leading-tight">
+              Você cuida dos pacientes.{' '}
+              <span className="bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
+                O OnDoctor cuida do resto.
+              </span>
+            </h1>
+            
+            <p className="text-base md:text-lg lg:text-xl text-gray-600 mb-10 leading-relaxed">
+              Financeiro, agenda, prontuário e relacionamento em uma única plataforma. 
+              Junte-se a milhares de profissionais da saúde que transformaram sua gestão.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
+              <a href="https://web.ondoctor.app/signup" target="_blank" rel="noopener noreferrer">
+                <Button variant="primary" size="lg" className="group">
+                  Quero testar agora
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </a>
+              <Link to="/precos">
+                <Button variant="secondary" size="lg">
+                  Conheça os planos
+                </Button>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {badges.slice(0, 6).map((badge, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-center lg:justify-start gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-primary-300 transition-all duration-200"
+                >
+                  <badge.icon className="w-4 h-4 text-primary-600 flex-shrink-0" />
+                  <span className="text-xs font-medium text-gray-700 truncate">{badge.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-w-5xl mx-auto">
-            {badges.map((badge, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-center gap-2 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-primary-300 transition-all duration-200"
-              >
-                <badge.icon className="w-4 h-4 text-primary-600 flex-shrink-0" />
-                <span className="text-xs font-medium text-gray-700 truncate">{badge.text}</span>
+          {/* Carrossel de Imagens à direita */}
+          <div className="relative lg:block">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-white p-3">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden">
+                {slides.map((slide, index) => {
+                  const SlideIcon = slide.icon
+                  return (
+                    <div
+                      key={index}
+                      className={`absolute inset-0 bg-gradient-to-br ${slide.color} flex items-center justify-center transition-all duration-700 ease-in-out ${
+                        index === currentSlide
+                          ? 'translate-x-0 opacity-100'
+                          : index < currentSlide
+                          ? '-translate-x-full opacity-0'
+                          : 'translate-x-full opacity-0'
+                      }`}
+                    >
+                      <div className="text-center p-8">
+                        <div className="w-24 h-24 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg transform transition-all duration-500 hover:scale-110">
+                          <SlideIcon className="w-12 h-12 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{slide.title}</h3>
+                        <p className="text-gray-600">{slide.subtitle}</p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            ))}
+
+              {/* Controles de navegação */}
+              <button
+                onClick={prevSlide}
+                className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                aria-label="Slide anterior"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-700" />
+              </button>
+
+              <button
+                onClick={nextSlide}
+                className="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                aria-label="Próximo slide"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-700" />
+              </button>
+
+              {/* Indicadores */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === currentSlide 
+                        ? 'bg-primary-600 w-8' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Ir para slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            {/* Elementos decorativos */}
+            <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary-200 rounded-full blur-3xl opacity-50"></div>
+            <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-primary-300 rounded-full blur-3xl opacity-50"></div>
+            
+            {/* Badges flutuantes */}
+            <div className="absolute -top-4 -left-4 bg-white rounded-lg shadow-lg px-4 py-2 border border-primary-200 animate-fade-in">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-primary-600" />
+                <span className="text-sm font-semibold text-gray-900">10K+ Profissionais</span>
+              </div>
+            </div>
+            
+            <div className="absolute -bottom-4 -right-4 bg-white rounded-lg shadow-lg px-4 py-2 border border-primary-200 animate-fade-in">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary-600" />
+                <span className="text-sm font-semibold text-gray-900">IA Integrada</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -218,7 +451,7 @@ function EnhancedStats() {
     { value: '10.000+', label: 'Profissionais de Saúde', description: 'Já transformam a rotina de suas clínicas' },
     { value: '27', label: 'Estados Brasileiros', description: 'O Brasil ama o OnDoctor 💚' },
     { value: 'R$ 730M+', label: 'Movimentados na Plataforma', description: 'Confiados através da nossa plataforma' },
-    { value: '100K+', label: 'Mensagens por dia', description: 'Via WhatsApp intermediadas pelo OnDoctor' },
+    { value: '100K+', label: 'Mensagens Enviadas', description: 'Via WhatsApp intermediadas pelo OnDoctor' },
     { value: '3M+', label: 'Pacientes', description: 'Cadastrados pelas clínicas que confiam' },
     { value: '9M+', label: 'Agendamentos', description: 'Realizados com sucesso' },
   ]
@@ -364,8 +597,15 @@ function AIFeatures() {
                 <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <feature.icon className="w-8 h-8 text-white" />
                 </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-1">{feature.title}</h3>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-1">
+                    <h3 className="text-2xl font-bold text-gray-900">{feature.title}</h3>
+                    {feature.title === 'Agente de IA' && (
+                      <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                        Em breve
+                      </span>
+                    )}
+                  </div>
                   <p className="text-primary-700 font-medium">{feature.subtitle}</p>
                 </div>
               </div>
@@ -390,16 +630,20 @@ function AIFeatures() {
 
 function ComparisonTable() {
   const features = [
-    { name: 'Agente de IA 24/7', ondoctor: true, others: false },
+    { name: 'Agente de IA', ondoctor: true, others: false },
     { name: 'Prontuário com IA', ondoctor: true, others: false },
     { name: 'WhatsApp Integrado', ondoctor: true, others: 'Limitado' },
     { name: 'Armazenamento Ilimitado', ondoctor: true, others: false },
     { name: 'Telemedicina Incluída', ondoctor: true, others: 'Pago à parte' },
     { name: 'Assinatura Digital', ondoctor: true, others: 'Pago à parte' },
     { name: 'Power BI Integrado', ondoctor: true, others: false },
-    { name: 'Suporte 24/7', ondoctor: true, others: 'Horário comercial' },
+    { name: 'White-Label', ondoctor: true, others: false },
+    { name: 'Gestão de Franquias', ondoctor: true, others: false },
+    { name: 'Conciliação bancária', ondoctor: true, others: false },
+    { name: 'Suporte via whatsapp', ondoctor: true, others: 'Horário comercial' },
     { name: 'Atualizações Gratuitas', ondoctor: true, others: false },
     { name: 'APIs Abertas', ondoctor: true, others: 'Limitado' },
+    { name: 'Outros recursos exclusivos', ondoctor: true, others: false },
   ]
 
   return (
@@ -455,9 +699,11 @@ function ComparisonTable() {
           <p className="text-gray-600 mb-6">
             Venha para o melhor. Não fique preso a métodos ultrapassados.
           </p>
-          <Button variant="primary" size="lg">
-            Começar agora gratuitamente
-          </Button>
+          <a href="https://web.ondoctor.app/signup" target="_blank" rel="noopener noreferrer">
+            <Button variant="primary" size="lg">
+              Começar agora gratuitamente
+            </Button>
+          </a>
         </div>
       </div>
     </section>
@@ -622,15 +868,23 @@ function AgendaSection() {
               </div>
             </div>
 
-            <Button variant="primary" size="lg">
-              Começar agora
-            </Button>
+            <a href="https://web.ondoctor.app/signup" target="_blank" rel="noopener noreferrer">
+              <Button variant="primary" size="lg">
+                Começar agora
+              </Button>
+            </a>
           </div>
 
-          <div className="relative">
-            <div className="aspect-square bg-gradient-to-br from-primary-100 to-primary-200 rounded-3xl p-8 flex items-center justify-center">
-              <Calendar className="w-64 h-64 text-primary-600 opacity-20" />
+          <div className="relative group">
+            <div className="rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary-100 to-primary-200 transition-all duration-500 group-hover:shadow-3xl group-hover:scale-105">
+              <img 
+                src="/agenda.png" 
+                alt="Interface da Agenda Online do OnDoctor - Sistema de agendamento inteligente para clínicas" 
+                loading="lazy"
+                className="w-full h-auto object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-110"
+              />
             </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-primary-600/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </div>
         </div>
       </div>
@@ -643,10 +897,16 @@ function ProntuarioSection() {
     <section className="py-20 bg-gradient-to-br from-primary-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-1 relative">
-            <div className="aspect-square bg-gradient-to-br from-green-100 to-green-200 rounded-3xl p-8 flex items-center justify-center">
-              <FileText className="w-64 h-64 text-green-600 opacity-20" />
+          <div className="order-2 lg:order-1 relative group">
+            <div className="rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-green-100 to-green-200 transition-all duration-500 group-hover:shadow-3xl group-hover:scale-105">
+              <img 
+                src="/telemedicine.png" 
+                alt="Prontuário Eletrônico com IA e Telemedicina OnDoctor - Atendimento online integrado" 
+                loading="lazy"
+                className="w-full h-auto object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-110"
+              />
             </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-green-600/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </div>
 
           <div className="order-1 lg:order-2">
@@ -682,9 +942,11 @@ function ProntuarioSection() {
               </div>
             </div>
 
-            <Button variant="primary" size="lg">
-              Ver planos
-            </Button>
+            <Link to="/precos">
+              <Button variant="primary" size="lg">
+                Ver planos
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -698,7 +960,7 @@ function FinanceSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-6">
+            <div className="inline-flex items-center px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-6">
               <DollarSign className="w-4 h-4 mr-2" />
               Gestão Financeira
             </div>
@@ -711,14 +973,14 @@ function FinanceSection() {
             </p>
             
             <div className="grid sm:grid-cols-2 gap-6 mb-8">
-              <Card className="p-6 bg-gradient-to-br from-purple-50 to-white border-purple-200">
-                <TrendingUp className="w-10 h-10 text-purple-600 mb-3" />
+              <Card className="p-6 bg-gradient-to-br from-primary-50 to-white border-primary-200">
+                <TrendingUp className="w-10 h-10 text-primary-600 mb-3" />
                 <h4 className="font-semibold text-gray-900 mb-2">Aumente a lucratividade</h4>
                 <p className="text-sm text-gray-600">Identifique oportunidades de crescimento</p>
               </Card>
               
-              <Card className="p-6 bg-gradient-to-br from-purple-50 to-white border-purple-200">
-                <BarChart3 className="w-10 h-10 text-purple-600 mb-3" />
+              <Card className="p-6 bg-gradient-to-br from-primary-50 to-white border-primary-200">
+                <BarChart3 className="w-10 h-10 text-primary-600 mb-3" />
                 <h4 className="font-semibold text-gray-900 mb-2">Diminua custos</h4>
                 <p className="text-sm text-gray-600">Otimize despesas e recursos</p>
               </Card>
@@ -729,10 +991,20 @@ function FinanceSection() {
             </Button>
           </div>
 
-          <div className="relative">
-            <div className="aspect-square bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl p-8 flex items-center justify-center">
-              <DollarSign className="w-64 h-64 text-purple-600 opacity-20" />
+          <div className="relative group">
+            <div className="rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary-100 to-primary-200 transition-all duration-500 group-hover:shadow-3xl group-hover:scale-105">
+              <img 
+                src="/finance-dashboard.jpg" 
+                alt="Dashboard de Gestão Financeira OnDoctor - Controle completo de receitas e despesas da clínica" 
+                loading="lazy"
+                className="w-full h-auto object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-110"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = '<div class="aspect-square flex items-center justify-center p-8"><svg class="w-64 h-64 text-primary-600 opacity-20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg></div>';
+                }}
+              />
             </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-primary-600/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </div>
         </div>
       </div>
@@ -839,6 +1111,359 @@ function About() {
   )
 }
 
+function ResourcesSection() {
+  const resources = [
+    {
+      icon: Calendar,
+      title: 'Agenda Completa',
+      description: 'Organize, amplie e informatize a agenda do seu consultório com facilidade e eficiência.',
+      features: ['Agenda Simples e Call Center', 'Sincronização com Google agenda', 'Lembretes inteligentes (WhatsApp)', 'Visualização por período']
+    },
+    {
+      icon: FileText,
+      title: 'Prontuário Eletrônico',
+      description: 'Tenha mais clareza sobre os quadros clínicos de todos os seus pacientes do sistema.',
+      features: ['Histórico completo', 'Busca avançada', 'Assistente com IA', 'Modelos pré-definidos']
+    },
+    {
+      icon: MessageSquare,
+      title: 'Lembretes Inteligentes',
+      description: 'Reduza o no-show com automações via WhatsApp.',
+      features: ['Confirmações automáticas', 'Envio de protocolos', 'Campanhas de marketing', 'Pesquisa de satisfação']
+    },
+    {
+      icon: Smartphone,
+      title: 'Anamnese Digital',
+      description: 'Envie questionário direto pro celular do paciente.',
+      features: ['Paciente responde no celular ou tablet', 'Envio com antecedência', 'Solicitar assinatura digital', 'Registro direto na ficha']
+    },
+    {
+      icon: FileSignature,
+      title: 'Assinatura Digital',
+      description: 'Assine documentos direto na plataforma.',
+      features: ['Autenticada e segura', 'Contratos, laudos e termos', 'Com certificado ou modo avançado', 'Envie com 1 click']
+    },
+    {
+      icon: FileText,
+      title: 'Modelos de Documentos',
+      description: 'Padronize e ganhe tempo no dia a dia.',
+      features: ['Criação de contratos, laudos, atestados', 'Pronto pra envio', 'Assinatura integrada', 'Registro na ficha do paciente']
+    },
+    {
+      icon: DollarSign,
+      title: 'Controle Financeiro',
+      description: 'Gestão completa do seu caixa.',
+      features: ['Caixa individual por atendente', 'Bancos e saldos', 'Plano de contas e centro de custo', 'DRE, fluxo de caixa e relatórios']
+    },
+    {
+      icon: Package,
+      title: 'Controle de Estoque',
+      description: 'Monitore seus insumos com precisão.',
+      features: ['Entradas e saídas', 'Baixa automática em procedimentos', 'Relatórios de reposição', 'Pedidos e transferência']
+    },
+    {
+      icon: TrendingUp,
+      title: 'Sistema de Marketing',
+      description: 'Conquiste e fidelize seus pacientes.',
+      features: ['Mensagens personalizadas', 'Campanhas por segmento', 'Promoções e aniversários', 'Datas especiais']
+    },
+    {
+      icon: Users,
+      title: 'CRM',
+      description: 'Organize seu funil de vendas.',
+      features: ['Criação de Funis', 'Tarefas e interações', 'Etapas e etiquetas', 'Ganho e perdas']
+    },
+    {
+      icon: FileText,
+      title: 'Convênio - Faturamento TISS',
+      description: 'Processo simplificado e integrado.',
+      features: ['Diversas tabelas', 'Controle de lotes', 'XML automático', 'Gestão de glosas']
+    },
+    {
+      icon: DollarSign,
+      title: 'Repasses e Comissões',
+      description: 'Controle produtividades e repasses.',
+      features: ['Regras configuráveis', 'Visão do profissional', 'Descontos automáticos', 'Dashboards e relatórios']
+    },
+    {
+      icon: Network,
+      title: 'Multi Empresa',
+      description: 'Controle matriz e filiais.',
+      features: ['Gestão centralizada', 'Plano de contas único', 'Centro de custos', 'Relatórios cruzados']
+    },
+    {
+      icon: Network,
+      title: 'Franquias',
+      description: 'Ideal para redes clínicas.',
+      features: ['Controle de franquiados', 'Visão franqueadora', 'Metas e definições', 'Relatórios e painéis BI']
+    },
+    {
+      icon: Users,
+      title: 'Multiusuário',
+      description: 'Segurança e controle total.',
+      features: ['Planos de senha', 'Permissão por grupo', 'Registro de alterações', 'Auditoria completa']
+    },
+    {
+      icon: FileText,
+      title: 'Nota Fiscal Eletrônica',
+      description: 'Automatize a emissão de NFS-e.',
+      features: ['Emissão por profissional', 'Status automático', 'Envio direto ao cliente', 'Integração completa']
+    },
+    {
+      icon: DollarSign,
+      title: 'Boletos Integrados',
+      description: 'Facilite o pagamento dos seus serviços.',
+      features: ['Emissão automática', '+22 bancos', 'Remessa e retorno direto', 'Baixa automática']
+    },
+    {
+      icon: Cloud,
+      title: 'Armazenamento em Nuvem',
+      description: 'Guarde tudo de forma segura.',
+      features: ['Upload de arquivos', 'Solicite arquivos ao paciente', 'Envio direto pelo celular', 'Comparador de imagens']
+    },
+    {
+      icon: BarChart3,
+      title: 'Relatórios Gerenciais',
+      description: 'Tome decisões com base em dados.',
+      features: ['Centenas de relatórios', 'Filtros diversos', 'Exportação personalizada', 'Análises detalhadas']
+    },
+    {
+      icon: Smartphone,
+      title: 'Painel de Atendimento',
+      description: 'Experiência moderna na sala de espera.',
+      features: ['Chamada por voz/texto', 'Vídeos institucionais', 'IA na locução', 'Interface moderna']
+    },
+    {
+      icon: Smartphone,
+      title: 'Teleconsulta',
+      description: 'Consultas online com prontuário visível.',
+      features: ['Link automático', 'Compartilhamento de tela', 'Prontuário integrado', 'Gravação de consultas']
+    },
+    {
+      icon: Shield,
+      title: 'Auditoria',
+      description: 'Monitore tudo que acontece no sistema.',
+      features: ['Registro de alterações', 'Hora, data e usuário', 'Filtros e histórico detalhado', 'Segurança total']
+    },
+    {
+      icon: BarChart3,
+      title: 'Plataforma de BI',
+      description: 'Exclusiva plataforma de BI com painéis e visualizações de dados em tempo real.',
+      features: ['Painéis de dados', 'Dashboard interativo', 'Várias visualizações', 'Rápido e prático']
+    },
+    {
+      icon: DollarSign,
+      title: 'OnDoctor Pay',
+      description: 'Sistema de pagamento exclusivo com geração de boletos, cartão de crédito, com baixa automática e banco digital.',
+      features: ['Emissão de boletos', 'Venda no cartão', 'Baixa automática', 'Banco digital']
+    }
+  ]
+
+  return (
+    <section id="recursos" className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Conheça os recursos que vão revolucionar seu consultório
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Descubra funcionalidades poderosas que simplificam sua rotina médica e melhoram o atendimento aos pacientes.
+          </p>
+        </div>
+
+        <div className="mb-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-3xl font-bold text-primary-600 mb-2">10K+</div>
+            <div className="text-sm text-gray-600">Profissionais Ativos</div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-3xl font-bold text-primary-600 mb-2">500K+</div>
+            <div className="text-sm text-gray-600">Consultas Agendadas</div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-3xl font-bold text-primary-600 mb-2">99.9%</div>
+            <div className="text-sm text-gray-600">Uptime Garantido</div>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="text-3xl font-bold text-primary-600 mb-2">100%</div>
+            <div className="text-sm text-gray-600">Dados Em Nuvem</div>
+          </div>
+        </div>
+
+        <div className="text-center mb-16">
+          <h3 className="text-3xl font-bold text-gray-900 mb-3">
+            Recursos que fazem a diferença
+          </h3>
+          <p className="text-lg text-gray-600">
+            Cada funcionalidade foi pensada para otimizar seu tempo e melhorar a experiência dos seus pacientes
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {resources.map((resource, index) => (
+            <Card key={index} hover className="p-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center mb-4">
+                <resource.icon className="w-7 h-7 text-white" />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">{resource.title}</h4>
+              <p className="text-gray-600 mb-4">{resource.description}</p>
+              <ul className="space-y-2 mb-4">
+                {resource.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0 mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button variant="outline" size="sm" className="w-full">
+                Saiba Mais
+              </Button>
+            </Card>
+          ))}
+        </div>
+
+        <div className="mt-16 text-center">
+          <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-12 text-white">
+            <h3 className="text-3xl font-bold mb-4">
+              Pronto para transformar sua clínica?
+            </h3>
+            <p className="text-xl mb-8 opacity-90">
+              Experimente gratuitamente e descubra como o OnDoctor pode revolucionar sua gestão
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="https://web.ondoctor.app/signup" target="_blank" rel="noopener noreferrer">
+                <Button size="lg" className="bg-white text-primary-600 hover:bg-gray-100">
+                  Experimente Grátis
+                </Button>
+              </a>
+              <Link to="/contato">
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                  Agendar Demonstração
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FAQ() {
+  const [openIndex, setOpenIndex] = useState(null)
+
+  const faqs = [
+    {
+      question: 'O OnDoctor é adequado para o meu tipo de clínica?',
+      answer: 'Sim! O OnDoctor atende clínicas médicas, odontológicas, psicológicas, fisioterapia, nutrição, estética e diversas outras especialidades. Nossa plataforma é flexível e se adapta às necessidades específicas de cada área da saúde.'
+    },
+    {
+      question: 'Preciso instalar algum software no meu computador?',
+      answer: 'Não! O OnDoctor é 100% online (cloud). Você acessa de qualquer lugar através do navegador, sem necessidade de instalação. Funciona em computadores, tablets e smartphones.'
+    },
+    {
+      question: 'Meus dados estão seguros?',
+      answer: 'Absolutamente! Utilizamos criptografia de ponta a ponta, servidores seguros e fazemos backups automáticos diários. Estamos em conformidade com a LGPD (Lei Geral de Proteção de Dados) e seguimos as melhores práticas de segurança da informação.'
+    },
+    {
+      question: 'Posso testar antes de contratar?',
+      answer: 'Sim! Oferecemos um período de teste gratuito para você conhecer todas as funcionalidades do sistema. Não é necessário cartão de crédito para começar.'
+    },
+    {
+      question: 'Como funciona o suporte técnico?',
+      answer: 'Oferecemos suporte via chat, e-mail e WhatsApp em horário comercial. Também temos uma base de conhecimento completa com tutoriais em vídeo e artigos para ajudá-lo a aproveitar ao máximo o sistema.'
+    },
+    {
+      question: 'Posso importar dados do meu sistema atual?',
+      answer: 'Sim! Nossa equipe auxilia na migração dos seus dados do sistema anterior para o OnDoctor, garantindo que nenhuma informação seja perdida no processo.'
+    },
+    {
+      question: 'O sistema emite notas fiscais?',
+      answer: 'Sim! O OnDoctor possui integração para emissão de NFS-e (Nota Fiscal de Serviço Eletrônica) de forma automática após cada atendimento ou pagamento.'
+    },
+    {
+      question: 'Quantos usuários podem acessar o sistema?',
+      answer: 'Depende do plano contratado. Temos opções desde profissionais autônomos até clínicas com múltiplos profissionais e unidades. Entre em contato para conhecer o plano ideal para você.'
+    }
+  ]
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index)
+  }
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  }
+
+  return (
+    <section className="py-20 bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Perguntas Frequentes
+          </h2>
+          <p className="text-xl text-gray-600">
+            Tire suas dúvidas sobre o OnDoctor
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className="border border-gray-200 rounded-xl overflow-hidden hover:border-primary-300 transition-colors"
+            >
+              <button
+                onClick={() => toggleFAQ(index)}
+                className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-gray-50 transition-colors"
+              >
+                <span className="text-lg font-semibold text-gray-900 pr-8">
+                  {faq.question}
+                </span>
+                <ChevronDown
+                  className={`w-6 h-6 text-primary-600 flex-shrink-0 transition-transform duration-300 ${
+                    openIndex === index ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  openIndex === index ? 'max-h-96' : 'max-h-0'
+                }`}
+              >
+                <div className="p-6 pt-0 text-gray-600 leading-relaxed">
+                  {faq.answer}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-gray-600 mb-4">Não encontrou a resposta que procurava?</p>
+          <Button variant="outline" size="lg">
+            Entre em contato conosco
+          </Button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function CTA() {
   return (
     <section id="precos" className="py-20 bg-gradient-to-b from-gray-50 to-white">
@@ -851,13 +1476,17 @@ function CTA() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button variant="primary" size="lg" className="group">
-            Quero começar com a versão gratuita
-            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          <Button variant="secondary" size="lg">
-            Conheça todos os planos
-          </Button>
+          <a href="https://web.ondoctor.app/signup" target="_blank" rel="noopener noreferrer">
+            <Button variant="primary" size="lg" className="group">
+              Quero começar com a versão gratuita
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
+          <Link to="/precos">
+            <Button variant="secondary" size="lg">
+              Conheça todos os planos
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
@@ -878,7 +1507,7 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
             <div className="mb-6">
-              <img src="/ondoctor-logo.svg" alt="OnDoctor" className="h-8 brightness-0 invert" />
+              <img src="/ondoctor-logo.png" alt="OnDoctor" className="h-10" />
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
               Sistema para Clínica completo e fácil de usar. Transforme a gestão da sua clínica 
@@ -897,11 +1526,11 @@ function Footer() {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Links</h3>
             <ul className="space-y-3">
-              <li><a href="#home" className="hover:text-primary-400 transition-colors">Home</a></li>
-              <li><a href="#recursos" className="hover:text-primary-400 transition-colors">Recursos</a></li>
-              <li><a href="#precos" className="hover:text-primary-400 transition-colors">Preços</a></li>
+              <li><Link to="/" className="hover:text-primary-400 transition-colors">Home</Link></li>
+              <li><Link to="/recursos" className="hover:text-primary-400 transition-colors">Recursos</Link></li>
+              <li><Link to="/precos" className="hover:text-primary-400 transition-colors">Preços</Link></li>
               <li><a href="https://ondoctor.app/blog/" className="hover:text-primary-400 transition-colors">Blog</a></li>
-              <li><a href="#contato" className="hover:text-primary-400 transition-colors">Contato</a></li>
+              <li><Link to="/contato" className="hover:text-primary-400 transition-colors">Contato</Link></li>
             </ul>
           </div>
 

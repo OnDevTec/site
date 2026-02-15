@@ -1,0 +1,26 @@
+# robots.txt para OnDoctor
+# https://site.ondoctor.app/robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://site.ondoctor.app/sitemap.xml
+
+# Bloquear arquivos desnecessários
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /*.json$
+Disallow: /package.json
+Disallow: /vite.config.js
+Disallow: /tailwind.config.js
+
+# Permitir crawlers de busca importantes
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
