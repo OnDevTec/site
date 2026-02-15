@@ -71,7 +71,7 @@ function App() {
         "description": "Sistema completo para gestão de clínicas e consultórios médicos",
         "contactPoint": {
           "@type": "ContactPoint",
-          "telephone": "+55-11-91234-5678",
+          "telephone": "+55-61-4042-0123",
           "contactType": "Customer Service",
           "areaServed": "BR",
           "availableLanguage": "Portuguese"
@@ -138,6 +138,7 @@ function Header({ mobileMenuOpen, setMobileMenuOpen }) {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-700 hover:text-primary-600"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

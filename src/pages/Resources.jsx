@@ -180,7 +180,7 @@ function ResourcesPage() {
 
   const socialLinks = [
     { icon: Facebook, href: 'https://facebook.com/ondoctorapp', label: 'Facebook' },
-    { icon: Instagram, href: 'https://instagram.com/ondoctorapp', label: 'Instagram' },
+    { icon: Instagram, href: 'https://instagram.com/ondoctor.app', label: 'Instagram' },
     { icon: Linkedin, href: 'https://linkedin.com/company/ondoctorapp', label: 'LinkedIn' },
     { icon: Youtube, href: 'https://youtube.com/c/ondoctor', label: 'YouTube' },
   ]
@@ -351,7 +351,7 @@ function ResourcesPage() {
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div className="md:col-span-2">
               <div className="mb-6">
-                <img src="/ondoctor-logo.png" alt="OnDoctor" className="h-10" />
+                <img src="/ondoctor-logo.png" alt="OnDoctor" className="h-10 brightness-0 invert" />
               </div>
               <p className="text-gray-400 mb-6 max-w-md">
                 Sistema para Clínica completo e fácil de usar. Transforme a gestão da sua clínica 
@@ -362,7 +362,7 @@ function ResourcesPage() {
                   <strong className="text-white">Email:</strong> contato@ondoctor.app
                 </p>
                 <p className="text-gray-400">
-                  <strong className="text-white">Telefone:</strong> (11) 99999-9999
+                  <strong className="text-white">WhatsApp:</strong> (61) 4042-0123
                 </p>
               </div>
             </div>
@@ -370,10 +370,10 @@ function ResourcesPage() {
             <div>
               <h4 className="text-white font-semibold mb-4">Links Rápidos</h4>
               <ul className="space-y-2">
-                <li><a href="/site/" className="hover:text-primary-400 transition-colors">Home</a></li>
-                <li><a href="/site/recursos.html" className="hover:text-primary-400 transition-colors">Recursos</a></li>
-                <li><a href="/site/#precos" className="hover:text-primary-400 transition-colors">Preços</a></li>
-                <li><a href="/site/#contato" className="hover:text-primary-400 transition-colors">Contato</a></li>
+                <li><Link to="/" className="hover:text-primary-400 transition-colors">Home</Link></li>
+                <li><Link to="/recursos" className="hover:text-primary-400 transition-colors">Recursos</Link></li>
+                <li><Link to="/precos" className="hover:text-primary-400 transition-colors">Preços</Link></li>
+                <li><Link to="/contato" className="hover:text-primary-400 transition-colors">Contato</Link></li>
               </ul>
             </div>
 
